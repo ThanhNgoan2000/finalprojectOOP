@@ -152,7 +152,7 @@ public class PlayGround extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				if (sound == false) {
-					Image imgMute = new ImageIcon("image/onSound.png").getImage().getScaledInstance(60, 60,
+					Image imgMute = image.muteButtonImage().getScaledInstance(60, 60,
 							Image.SCALE_SMOOTH);
 					mute.setIcon(new ImageIcon(imgMute));
 					controller.turnMusic();

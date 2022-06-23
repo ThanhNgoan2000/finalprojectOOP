@@ -10,7 +10,7 @@ import view.PlayGround;
 import view.StartingGround;
 
 public class Controller {
-	private StartingGround starting;
+	private StartingGround starting; 
 	private PlayGround view;
 	private Music music;
 

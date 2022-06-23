@@ -6,6 +6,10 @@ import javax.swing.ImageIcon;
 
 public class ImageSetting {
 private Image image;
+public Image backgroundImage() {
+    image = new ImageIcon("image/background.png").getImage();
+	return image;
+}
 public Image gameImage() {
     image = new ImageIcon("image/game.png").getImage();
 	return image;
