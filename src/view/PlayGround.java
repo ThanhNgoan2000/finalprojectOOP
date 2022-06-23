@@ -10,7 +10,6 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -21,39 +20,44 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class PlayGround extends JFrame implements MouseListener {
-	 JPanel panel;
-	 JButton[][] button;
-	 JLabel playLabel, controlLabel, nameLabel, buttonLabel, iconLabel, markLabel;
-	 JTextField nameX, nameO;
-	 JButton play, about, home, undo, mute;
-	public static boolean start = false;
+import controller.Controller;
+import model.Music;
 
-	public PlayGround(int i, int j) {
+public class PlayGround extends JFrame {
+	Controller controller;
+	Music music;
+	JPanel panel;
+	ImageSetting image;
+	JButton[][] button;
+	JLabel playLabel, controlLabel, nameLabel, buttonLabel, iconLabel, markLabel;
+	JTextField nameX, nameO;
+	public static JButton play, about, home, undo, mute;
+	public static boolean start = false;
+	public boolean sound = true;
+
+	public PlayGround(Controller controller, Music music, int row, int column) {
 		// TODO Auto-generated constructor stub
-		button = new JButton[i][j];
+		this.controller = controller;
+		this.music = music;
+		image = new ImageSetting();
+		button= new JButton[row][column];
 		setTitle("Cờ Caro");
 		setIconImage(new ImageIcon("image/game.png").getImage());
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
+//		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(850, 550);
 		setResizable(false);
 		setLocationRelativeTo(null);
-
-
 		init();
+		controller.turnMusic();
 		createCursor();
-//		try {
-//			music();
-//		} catch (UnsupportedOperationException | IOException | LineUnavailableException e) {
-//			// TODO: handle exception
-//			e.printStackTrace();
-//		}
-	}
+		setVisible(true);
 
-//	public void music() throws UnsupportedOperationException , IOException , LineUnavailableException  {
-//		// TODO Auto-generated method stub
-//		File file = new File("muic/sound.wav");
-//	}
+	}
+	public JButton[][] setBoard(int row, int column) {
+		// TODO Auto-generated method stub
+		button = new JButton[row][column];
+		return button;
+	}
 
 	private void init() {
 		// TODO Auto-generated method stub
@@ -78,10 +82,10 @@ public class PlayGround extends JFrame implements MouseListener {
 		buttonLabel.setPreferredSize(new Dimension(250, 180));
 		iconLabel.setPreferredSize(new Dimension(250, 100));
 		markLabel.setPreferredSize(new Dimension(250, 120));
-		playLabel.setLayout(new GridLayout(button.length, button.length,1,1));
+		playLabel.setLayout(new GridLayout(button.length, button.length, 1, 1));
 
 		for (int i = 0; i < button.length; i++) {
-			for (int j = 0; j < button.length; j++) {
+			for (int j = 0; j < button[0].length; j++) {
 				button[i][j] = new JButton();
 				button[i][j].setEnabled(false);
 				playLabel.add(button[i][j]);
@@ -90,13 +94,12 @@ public class PlayGround extends JFrame implements MouseListener {
 			}
 		}
 		nameLabel.setLayout(new FlowLayout());
-		Image imgX = new ImageIcon("image/x.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-		nameLabel.add(new JLabel(new ImageIcon(imgX)));
+
+		nameLabel.add(new JLabel(new ImageIcon(image.labelXImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH))));
 		nameLabel.add(nameX = new JTextField());
 		nameX.setPreferredSize(new Dimension(200, 25));
 
-		Image imgO = new ImageIcon("image/o.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-		nameLabel.add(new JLabel(new ImageIcon(imgO)));
+		nameLabel.add(new JLabel(new ImageIcon(image.labelOImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH))));
 		nameLabel.add(nameO = new JTextField());
 		nameO.setPreferredSize(new Dimension(200, 25));
 
@@ -143,12 +146,35 @@ public class PlayGround extends JFrame implements MouseListener {
 		mute.setFocusable(false);
 		mute.setBorderPainted(false);
 		mute.setContentAreaFilled(false);
+		mute.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (sound == false) {
+					Image imgMute = new ImageIcon("image/onSound.png").getImage().getScaledInstance(60, 60,
+							Image.SCALE_SMOOTH);
+					mute.setIcon(new ImageIcon(imgMute));
+					controller.turnMusic();
+					sound = true;
+				} else {
+					controller.offMusic();
+					Image imgMute = new ImageIcon("image/offSound.png").getImage().getScaledInstance(60, 60,
+							Image.SCALE_SMOOTH);
+					mute.setIcon(new ImageIcon(imgMute));
+					sound = false;
+				}
+
+			}
+		});
+//		mute.addActionListener(this);
 
 		Image imgHome = new ImageIcon("image/homeicon.png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
 		iconLabel.add(home = new JButton(new ImageIcon(imgHome)));
 		home.setFocusable(false);
 		home.setBorderPainted(false);
 		home.setContentAreaFilled(false);
+//		home.addActionListener(this);
 
 		Image imgMarkLabel = new ImageIcon("image/xLabel.png").getImage().getScaledInstance(100, 100,
 				Image.SCALE_SMOOTH);
@@ -158,11 +184,6 @@ public class PlayGround extends JFrame implements MouseListener {
 		markLabel.add(new JLabel(new ImageIcon(imgGame)));
 
 	}
-
-	public static void main(String[] args) {
-		new PlayGround(10, 10).setVisible(true);
-	}
-
 
 	public void about() {
 		// TODO Auto-generated method stub
@@ -226,9 +247,10 @@ public class PlayGround extends JFrame implements MouseListener {
 		}
 		return true;
 	}
+
 	public void createCursor() {
 		Image cursor = new ImageIcon("image/cursor.png").getImage();
-		setCursor(Toolkit.getDefaultToolkit().createCustomCursor(cursor,new Point(0,20), "cursor  "));
+		setCursor(Toolkit.getDefaultToolkit().createCustomCursor(cursor, new Point(0, 20), "cursor  "));
 	}
 
 	public void setBackGround() {
@@ -253,33 +275,16 @@ public class PlayGround extends JFrame implements MouseListener {
 		}
 	}
 
-	@Override
-	public void mouseClicked(java.awt.event.MouseEvent e) {
-		// TODO Auto-generated method stub
-	}
 
-	@Override
-	public void mousePressed(java.awt.event.MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseReleased(java.awt.event.MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseEntered(java.awt.event.MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void mouseExited(java.awt.event.MouseEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+//	@Override
+//	public void actionPerformed(ActionEvent e) {
+//		// TODO Auto-generated method stub
+//		if(e.getSource()==home) {
+//			controller.showStarting();
+//		}
+//		if(e.getSource()==mute) {
+//			controller.turnMusic();
+//		}
+//	}
 
 }

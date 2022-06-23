@@ -1,97 +1,83 @@
 package view;
 
 import java.awt.Color;
-import java.awt.GridLayout;
+import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.UIManager;
 
 public class StartingGround2 extends JFrame {
 	protected JPanel mainPanel;
 	protected JButton lv1, lv2, lv3;
+	JTextField column, row;
 	protected JLabel labeltop, labelbot;
+	JLabel labelColumn, labelRow;
 
 	public StartingGround2() {
 
-		// TODO Auto-generated constructor stub
-		super("Cờ Caro");
+		EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (ClassNotFoundException ex) {
+                } catch (InstantiationException ex) {
+                } catch (IllegalAccessException ex) {
+                } catch (javax.swing.UnsupportedLookAndFeelException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		init();
 		setIconImage(new ImageIcon("image/game.png").getImage());
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(520, 600);
 		setLocationRelativeTo(null);
+            }
+            });
 	}
 
 	public void init() {
 		// mainPanel
 		add(mainPanel = new JPanel());
 		mainPanel.setBackground(new Color(225,228,160));
-//		mainPanel.setLayout(new BorderLayout());
+		mainPanel.setLayout(new FlowLayout());
 		Image image = new ImageIcon("image/background.png").getImage().getScaledInstance(500,550, Image.SCALE_SMOOTH);
 //		mainPanel.add(labeltop = new JLabel(new ImageIcon(image)), "North");
 		mainPanel.add(labelbot = new JLabel(new ImageIcon(image)));
+		labelbot.setLayout(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.anchor = GridBagConstraints.EAST;
+		labelbot.add(labelRow= new JLabel("Input row: "),gbc);
+		gbc.gridx+=2;
+		labelbot.add(labelColumn = new JLabel("Input column:"),gbc);
+		gbc.gridy++;
+		gbc.gridx = 0;
 
-		labelbot.setLayout(new GridLayout(4, 1));
-
-		// button easy
-		Image img1 = new ImageIcon("image/easy.png").getImage().getScaledInstance(200, 180, Image.SCALE_SMOOTH);
-		labelbot.add(lv1 = new JButton(new ImageIcon(img1)));
-
-		lv1.setFocusable(false);
-		lv1.setBorderPainted(false);
-		lv1.setContentAreaFilled(false);
-		lv1.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				dispose();
-				new PlayGround(3, 3).setVisible(true);
-			}
-		});
-		// button normal
-		Image img2 = new ImageIcon("image/normal.png").getImage().getScaledInstance(200, 180, Image.SCALE_SMOOTH);
-		labelbot.add(lv2 = new JButton(new ImageIcon(img2)));
-
-		lv2.setBackground(Color.LIGHT_GRAY);
-		lv2.setFocusable(false);
-		lv2.setBorderPainted(false);
-		lv2.setContentAreaFilled(false);
-		lv2.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				dispose();
-				new PlayGround(9, 9).setVisible(true);
-			}
-		});
-		// button hard
-		Image img3 = new ImageIcon("image/hard.png").getImage().getScaledInstance(200, 180, Image.SCALE_SMOOTH);
-		labelbot.add(lv3 = new JButton(new ImageIcon(img3)));
-
-		lv3.setBackground(Color.LIGHT_GRAY);
-		lv3.setFocusable(false);
-		lv3.setBorderPainted(false);
-		lv3.setContentAreaFilled(false);
-		lv3.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				dispose();
-				new PlayGround(13, 13).setVisible(true);
-			}
-		});
-
+		gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1;
+        row = new JTextField(10);
+        add(row , gbc);
+        gbc.gridx += 2;
+        column = new JTextField(10);
+        add(column , gbc);
 	}
+
 
 	public static void main(String[] args) {
 		new StartingGround2().setVisible(true);

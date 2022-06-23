@@ -1,6 +1,5 @@
 package controller;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -12,31 +11,42 @@ import view.StartingGround;
 
 public class Controller {
 	private StartingGround starting;
-   private PlayGround view;
-   private Music music;
-public Controller() {
-	super();
-	starting = new StartingGround();
-	view = new PlayGround(15, 15);
+	private PlayGround view;
+	private Music music;
 
-	music = new Music(new File("music/backgound.wav"));
-}
-public void showStarting() {
+	public Controller(Music music) {
+		super();
+		this.music = music;
+		starting = new StartingGround(this,music);
+//		view = new PlayGround(this, music);
 
-}
-   public void showView() {
-	view.setVisible(true);
-}
-   public void turnMusic()  {
-
-
-	  try {
-		  music.actionMusicbackGround();
-	} catch ( IOException | LineUnavailableException | UnsupportedAudioFileException  e) {
-		// TODO: handle exception
-		e.printStackTrace();
 	}
 
-   }
-}
+    public void showView(int row, int column) {
+    	view = new PlayGround(this, music,row,column);
+//    	view.setBoard(row,column);
+    }
+	public void turnMusic() {
 
+		try {
+			music.actionMusicBackground();
+		} catch (IOException | LineUnavailableException | UnsupportedAudioFileException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
+
+	public void offMusic() {
+		try {
+			music.turnOffMusicBackground();
+		} catch (Exception e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+
+	}
+   public static void main(String[] args) {
+		 Music music = new Music();
+			Controller ctrl = new Controller(music);
+}
+}

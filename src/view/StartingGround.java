@@ -2,7 +2,7 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.GridLayout;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,22 +12,52 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.MatteBorder;
+
+import controller.Controller;
+import model.Music;
 
 public class StartingGround extends JFrame {
+	Music music;
+    Controller controller;
+	ImageSetting image ;
 	 JPanel mainPanel;
-	 JButton lv1, lv2, lv3;
+	 JTextField column, row;
+	 JButton lv1, startButton, lv3;
 	 JLabel labeltop, labelbot;
+	 JLabel labelRow, labelColumn;
 
-	public StartingGround() {
+//	public StartingGround(Controller controller, Music music) {
+//
+//		// TODO Auto-generated constructor stub
+//		super("Cờ Caro");
+//		this.music = music;
+//		this.controller = controller;
+//		this.image = new ImageSetting();
+//		init();
+//		controller.turnMusic();
+//		setIconImage(image.gameImage());
+//		setResizable(false);
+//		setDefaultCloseOperation(EXIT_ON_CLOSE);
+//		setSize(520, 600);
+//		setLocationRelativeTo(null);
+//		setVisible(true);
+//	}
+	public StartingGround(Controller controller, Music music ) {
 
 		// TODO Auto-generated constructor stub
 		super("Cờ Caro");
+		this.image = new ImageSetting();
+		this.music = music;
+        this.controller = controller;
 		init();
-		setIconImage(new ImageIcon("image/game.png").getImage());
+		setIconImage(image.gameImage());
 		setResizable(false);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(520, 600);
 		setLocationRelativeTo(null);
+		setVisible(true);
 	}
 
 	public void init() {
@@ -35,66 +65,43 @@ public class StartingGround extends JFrame {
 		add(mainPanel = new JPanel());
 		mainPanel.setBackground(new Color(225,228,160));
 		mainPanel.setLayout(new BorderLayout());
-		Image image = new ImageIcon("image/background.png").getImage().getScaledInstance(510, 370, Image.SCALE_SMOOTH);
-		mainPanel.add(labeltop = new JLabel(new ImageIcon(image)), "North");
-		mainPanel.add(labelbot = new JLabel(), "Center");
+		Image image = new ImageIcon("image/background.png").getImage().getScaledInstance(500, 520, Image.SCALE_SMOOTH);
+		mainPanel.add(labeltop = new JLabel(new ImageIcon(image)), "Center");
+		labeltop.add(labelRow = new JLabel("Row:"));
+		labelRow.setBounds(30,460,100,30);
+		labelRow.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
+		labeltop.add(row = new JTextField(10));
+		row.setBounds(80,450,120,50);
 
-		labelbot.setLayout(new GridLayout(3, 1));
+		row.setBorder(new MatteBorder(-1,-1,-1,-1,new ImageIcon(this.image.labelXImage().getScaledInstance(10, 10, Image.SCALE_SMOOTH))));
+		row.setBackground(new Color(225,228,160));
+		labeltop.add(labelColumn = new JLabel("Column:"));
+		labelColumn.setBounds(250,460,120,30);
+		labelColumn.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
+		labeltop.add(column = new JTextField(10));
+		column.setBounds(320,450,120,50);
+		column.setBorder(new MatteBorder(-1,-1,-1, -1, new ImageIcon(this.image.labelOImage().getScaledInstance(10, 10, Image.SCALE_SMOOTH) )));
+		column.setBackground(new Color(225,228,160));
 
-		// button easy
-		Image img1 = new ImageIcon("image/easy.png").getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
-		labelbot.add(lv1 = new JButton(new ImageIcon(img1)));
-		lv1.setFocusable(false);
-		lv1.setBorderPainted(false);
-		lv1.setContentAreaFilled(false);
-		lv1.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				dispose();
-				new PlayGround(3, 3).setVisible(true);
-			}
-		});
-		// button normal
-		Image img2 = new ImageIcon("image/normal.png").getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
-		labelbot.add(lv2 = new JButton(new ImageIcon(img2)));
-
-		lv2.setBackground(Color.LIGHT_GRAY);
-		lv2.setFocusable(false);
-		lv2.setBorderPainted(false);
-		lv2.setContentAreaFilled(false);
-		lv2.addActionListener(new ActionListener() {
+		// button start
+		Image img2 = new ImageIcon("image/start.png").getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+		labeltop.add(startButton = new JButton(new ImageIcon(img2)));
+        startButton.setBounds(180, 480, 150, 100);
+		startButton.setBackground(Color.LIGHT_GRAY);
+		startButton.setFocusable(false);
+		startButton.setBorderPainted(false);
+		startButton.setContentAreaFilled(false);
+		startButton.addActionListener(new  ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				dispose();
-				new PlayGround(9, 9).setVisible(true);
-			}
-		});
-		// button hard
-		Image img3 = new ImageIcon("image/hard.png").getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
-		labelbot.add(lv3 = new JButton(new ImageIcon(img3)));
-
-		lv3.setBackground(Color.LIGHT_GRAY);
-		lv3.setFocusable(false);
-		lv3.setBorderPainted(false);
-		lv3.setContentAreaFilled(false);
-		lv3.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				dispose();
-				new PlayGround(13, 13).setVisible(true);
+//				Music music = new Music();
+//				 controller = new Controller(music);
+				 controller.showView(Integer.parseInt(row.getText()), Integer.parseInt(column.getText()));
 			}
 		});
 
 	}
-
-//	public static void main(String[] args) {
-//		new StartingGround().setVisible(true);
-//	}
 
 }
