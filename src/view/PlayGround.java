@@ -18,29 +18,65 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import controller.Controller;
+import model.Board;
 import model.Music;
+import model.Player;
 
-public class PlayGround extends JFrame {
+public class PlayGround extends JFrame implements Observer {
 	Controller controller;
 	Music music;
+	Board board;
+	Player playingControll;
 	JPanel panel;
-	ImageSetting image;
+	ImageSetting image = new ImageSetting();// chưa khai báo sẽ không update được
+
 	JButton[][] button;
 	JLabel playLabel, controlLabel, nameLabel, buttonLabel, iconLabel, markLabel;
-	JTextField nameX, nameO;
-	public static JButton play, about, home, undo, mute;
+	JLabel turnLabel = new JLabel();// chưa khai báo sẽ không update được
+	JTextField nameX = new JTextField(), nameO = new JTextField();
+	JScrollPane scrollPane;
+	public static JButton play, about, home, undo,mute, surrender;
 	public static boolean start = false;
 	public boolean sound = true;
+	public int value = 1;
 
-	public PlayGround(Controller controller, Music music, int row, int column) {
+	public PlayGround(Controller controller, Board board, Player playingControll, Music music, int row,
+			int column) {
 		// TODO Auto-generated constructor stub
 		this.controller = controller;
 		this.music = music;
+		this.board = board;
+		this.playingControll = playingControll;
+		board.registerObs(this);// đăng kí cho màn hình
+//		playingControll.registerObs(this);
+		button = new JButton[row][column];
+		for (int i = 0; i < button.length; i++) {
+			for (int j = 0; j < button[i].length; j++) {
+				button[i][j] = new JButton();
+			}
+		}
+		controller.setArr(row, column);
 		image = new ImageSetting();
-		button= new JButton[row][column];
+		setTitle("Cờ Caro");
+		setIconImage(new ImageIcon("image/game.png").getImage());
+		setSize(850, 550);
+		setResizable(false);
+		setLocationRelativeTo(null);
+		init();
+//		controller.turnMusic();
+		createCursor();
+		setVisible(true);
+
+	}
+
+	public PlayGround(int row, int column) {
+		// TODO Auto-generated constructor stub
+		image = new ImageSetting();
+		button = new JButton[row][column];
 		setTitle("Cờ Caro");
 		setIconImage(new ImageIcon("image/game.png").getImage());
 //		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -48,11 +84,10 @@ public class PlayGround extends JFrame {
 		setResizable(false);
 		setLocationRelativeTo(null);
 		init();
-		controller.turnMusic();
 		createCursor();
 		setVisible(true);
-
 	}
+
 	public JButton[][] setBoard(int row, int column) {
 		// TODO Auto-generated method stub
 		button = new JButton[row][column];
@@ -63,6 +98,8 @@ public class PlayGround extends JFrame {
 		// TODO Auto-generated method stub
 		add(panel = new JPanel());
 		panel.setLayout(new BorderLayout());
+//		panel.add(playLabel = new JLabel(), "Center");
+//		panel.add(scrollPane = new JScrollPane(), "Center");
 		panel.add(playLabel = new JLabel(), "Center");
 		panel.add(controlLabel = new JLabel(), "East");
 		panel.setBackground(new Color(246, 201, 163));
@@ -75,6 +112,8 @@ public class PlayGround extends JFrame {
 		iconLabel.setBorder(BorderFactory.createRaisedSoftBevelBorder());
 		controlLabel.add(markLabel = new JLabel());
 
+//		scrollPane.add(playLabel = new JLabel());
+//		scrollPane.setPreferredSize(new Dimension(600, 500));
 		playLabel.setPreferredSize(new Dimension(500, 500));
 		playLabel.setBorder(BorderFactory.createEtchedBorder());
 		controlLabel.setPreferredSize(new Dimension(250, 500));
@@ -82,30 +121,51 @@ public class PlayGround extends JFrame {
 		buttonLabel.setPreferredSize(new Dimension(250, 180));
 		iconLabel.setPreferredSize(new Dimension(250, 100));
 		markLabel.setPreferredSize(new Dimension(250, 120));
-		playLabel.setLayout(new GridLayout(button.length, button.length, 1, 1));
 
+		playLabel.setLayout(new GridLayout(button.length, button[0].length, 1, 1));
 		for (int i = 0; i < button.length; i++) {
-			for (int j = 0; j < button[0].length; j++) {
+			for (int j = 0; j < button[i].length; j++) {
 				button[i][j] = new JButton();
+//				scrollPane.add(button[i][j]);
+
+				button[i][j].setPreferredSize(new Dimension(30, 30));
 				button[i][j].setEnabled(false);
 				playLabel.add(button[i][j]);
 				button[i][j].setBackground(new Color(255, 208, 208));
+				button[i][j].addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// TODO Auto-generated method stub
+						for (int i = 0; i < button.length; i++) {
+							for (int j = 0; j < button[i].length; j++) {
+								if (e.getSource() == button[i][j]) {
+									controller.setTurn();
+									controller.setArrValue(i, j, value++);
+									button[i][j].setEnabled(false);
+									System.out.println(i + " " + j + " " + value);
+								}
+							}
+						}
+					}
+				});
 
 			}
 		}
+
 		nameLabel.setLayout(new FlowLayout());
 
 		nameLabel.add(new JLabel(new ImageIcon(image.labelXImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH))));
-		nameLabel.add(nameX = new JTextField());
+		nameLabel.add(nameX);
 		nameX.setPreferredSize(new Dimension(200, 25));
 
 		nameLabel.add(new JLabel(new ImageIcon(image.labelOImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH))));
-		nameLabel.add(nameO = new JTextField());
+		nameLabel.add(nameO);
 		nameO.setPreferredSize(new Dimension(200, 25));
 
 		buttonLabel.setLayout(new FlowLayout());
-		Image imgPlay = new ImageIcon("image/play.png").getImage().getScaledInstance(120, 80, Image.SCALE_SMOOTH);
-		buttonLabel.add(play = new JButton(new ImageIcon(imgPlay)));
+		buttonLabel.add(play = new JButton(
+				new ImageIcon(image.playButtonImage().getScaledInstance(120, 80, Image.SCALE_SMOOTH))));
 		play.setBackground(controlLabel.getBackground());
 		play.setFocusable(false);
 		play.setBorderPainted(false);
@@ -116,11 +176,17 @@ public class PlayGround extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				startGame();
+//				startGame();
+//				board.setArr(button.length,button[0].length);
+				controller.setNameXO(nameX.getText(), nameO.getText());
+				controller.setArr(button.length, button[0].length);
+//				checkNamePlayer();
+
 			}
 		});
-		Image imgAbout = new ImageIcon("image/about.png").getImage().getScaledInstance(120, 80, Image.SCALE_SMOOTH);
-		buttonLabel.add(about = new JButton(new ImageIcon(imgAbout)));
+
+		buttonLabel.add(about = new JButton(
+				new ImageIcon(image.aboutButtonImage().getScaledInstance(120, 80, Image.SCALE_SMOOTH))));
 		about.setBackground(controlLabel.getBackground());
 		about.setFocusable(false);
 		about.setBorderPainted(false);
@@ -135,14 +201,13 @@ public class PlayGround extends JFrame {
 		});
 
 		iconLabel.setLayout(new GridLayout(1, 3));
-		Image imgUndo = new ImageIcon("image/undo.png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-		iconLabel.add(undo = new JButton(new ImageIcon(imgUndo)));
+		iconLabel.add(
+				undo = new JButton(new ImageIcon(image.undoImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH))));
 		undo.setFocusable(false);
 		undo.setBorderPainted(false);
 		undo.setContentAreaFilled(false);
 
-		Image imgMute = new ImageIcon("image/onSound.png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-		iconLabel.add(mute = new JButton(new ImageIcon(imgMute)));
+		iconLabel.add(mute= new JButton(new ImageIcon(image.onSoundImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH))));
 		mute.setFocusable(false);
 		mute.setBorderPainted(false);
 		mute.setContentAreaFilled(false);
@@ -152,36 +217,66 @@ public class PlayGround extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				if (sound == false) {
-					Image imgMute = image.muteButtonImage().getScaledInstance(60, 60,
-							Image.SCALE_SMOOTH);
-					mute.setIcon(new ImageIcon(imgMute));
+					mute.setIcon(new ImageIcon(image.onSoundImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH)));
 					controller.turnMusic();
 					sound = true;
 				} else {
 					controller.offMusic();
-					Image imgMute = new ImageIcon("image/offSound.png").getImage().getScaledInstance(60, 60,
-							Image.SCALE_SMOOTH);
-					mute.setIcon(new ImageIcon(imgMute));
+					mute.setIcon(new ImageIcon(image.offSoundImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH)));
 					sound = false;
 				}
 
 			}
 		});
-//		mute.addActionListener(this);
 
-		Image imgHome = new ImageIcon("image/homeicon.png").getImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH);
-		iconLabel.add(home = new JButton(new ImageIcon(imgHome)));
+		iconLabel
+				.add(home = new JButton(new ImageIcon(image.homeIcon().getScaledInstance(60, 60, Image.SCALE_SMOOTH))));
 		home.setFocusable(false);
 		home.setBorderPainted(false);
 		home.setContentAreaFilled(false);
-//		home.addActionListener(this);
+		home.addActionListener(new ActionListener() {
 
-		Image imgMarkLabel = new ImageIcon("image/xLabel.png").getImage().getScaledInstance(100, 100,
-				Image.SCALE_SMOOTH);
-		Image imgGame = new ImageIcon("image/game.png").getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				int joption = JOptionPane.showConfirmDialog(null, "Bạn có chắc muốn thoát game chứ??", null,
+						JOptionPane.DEFAULT_OPTION);
+				if (joption == JOptionPane.OK_OPTION) {
+					dispose();
+				}
+			}
+		});
+
 		markLabel.setLayout(new FlowLayout());
-		markLabel.add(new JLabel(new ImageIcon(imgMarkLabel)));
-		markLabel.add(new JLabel(new ImageIcon(imgGame)));
+//		turnLabel.setIcon(new ImageIcon(image.xLabelImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
+
+		markLabel.add(turnLabel);
+		surrender = new JButton(new ImageIcon(image.surrenderImage().getScaledInstance(100, 80, Image.SCALE_SMOOTH)));
+		surrender.setBackground(markLabel.getBackground());
+		surrender.setFocusable(false);
+		surrender.setBorderPainted(false);
+		surrender.setContentAreaFilled(false);
+		surrender.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				int joption = JOptionPane.showConfirmDialog(null, "Đầu hàng sớm thế??", null,
+						JOptionPane.DEFAULT_OPTION);
+				if (joption == JOptionPane.OK_OPTION) {
+					board.setArr(button.length, button[0].length);
+					for (int i = 0; i < button.length; i++) {
+						for (int j = 0; j < button[i].length; j++) {
+							button[i][j].setEnabled(true);
+						}
+					}
+
+				}
+
+			}
+
+		});
+		markLabel.add(surrender);
 
 	}
 
@@ -196,12 +291,8 @@ public class PlayGround extends JFrame {
 		s = s + "6. Nhấn vào reset để khởi tạo lại chò chơi (Nhập tên người chơi mới, đặt lại số điểm,....).\n";
 		s = s + "7. Game có tích hợp Undo ( Ctrl Z ) và Redo ( Ctrl Y ) để dùng khi đánh nhầm chẳng hạn :D.\n";
 		int joption = JOptionPane.showConfirmDialog(null, s, "About?", JOptionPane.DEFAULT_OPTION,
-				JOptionPane.INFORMATION_MESSAGE, new ImageIcon("image/aboutImg.png"));
+				JOptionPane.INFORMATION_MESSAGE, new ImageIcon(image.aboutImage()));
 
-	}
-
-	public void startGame() {
-		checkNamePlayer();
 	}
 
 	public boolean checkNamePlayer() {
@@ -212,12 +303,12 @@ public class PlayGround extends JFrame {
 			nameX.setEditable(false);// we can't edit player name when game start
 			nameO.setEditable(false);
 			start = true;
-			setBackGround();
 			for (int i = 0; i < button.length; i++) {
-				for (int j = 0; j < button.length; j++) {
+				for (int j = 0; j < button[i].length; j++) {
 					button[i][j].setEnabled(true);
 				}
 			}
+			return true;
 		} else if (s1.compareTo("") == 0 && s2.compareTo("") != 0) {
 			nameX.setBackground(Color.red);
 			int joption = JOptionPane.showConfirmDialog(null, "Tên của người chơi X đâu rồi????", null,
@@ -226,6 +317,8 @@ public class PlayGround extends JFrame {
 
 				nameX.setBackground(Color.white);
 			}
+			start = false;
+			return false;
 		} else if (s1.compareTo("") != 0 && s2.compareTo("") == 0) {
 			nameO.setBackground(Color.red);
 			int joption = JOptionPane.showConfirmDialog(null, "Tên của người chơi O đâu rồi????", null,
@@ -234,7 +327,9 @@ public class PlayGround extends JFrame {
 
 				nameO.setBackground(Color.white);
 			}
-		} else {
+			start = false;
+			return false;
+		} else if (s1.compareTo("") != 0 && s2.compareTo("") != 0) {
 			nameX.setBackground(Color.red);
 			nameO.setBackground(Color.red);
 
@@ -244,47 +339,72 @@ public class PlayGround extends JFrame {
 				nameX.setBackground(Color.white);
 				nameO.setBackground(Color.white);
 			}
+			start = false;
+			return false;
 		}
-		return true;
+		return false;
 	}
 
 	public void createCursor() {
-		Image cursor = new ImageIcon("image/cursor.png").getImage();
-		setCursor(Toolkit.getDefaultToolkit().createCustomCursor(cursor, new Point(0, 20), "cursor  "));
+
+		setCursor(Toolkit.getDefaultToolkit().createCustomCursor(image.cursorImage(), new Point(0, 20), "cursor  "));
 	}
 
-	public void setBackGround() {
-		// tô 2 màu trên bàn cờ theo đường chéo
-		for (int i = 0; i < button.length; i++) {
-			for (int j = 0; j < button.length; j++) {
+	@Override
+	public void update() {
 
-				if (i % 2 == 0) {
-					if (j % 2 == 0) {
-						button[i][j].setBackground(new Color(255, 230, 230));
-					} else {
+
+		nameX.setText(playingControll.getNameX());
+		nameO.setText(playingControll.getNameO());
+
+//		System.out.println(playingControll.getNameX() + "  , " + playingControll.getNameO());
+
+		int[][] playArr = board.getArr();
+//		System.out.print(Arrays.deepToString(playArr));)
+		if (checkNamePlayer() == true) {// paint color for checkerBoard
+			for (int i = 0; i < playArr.length; i++) {
+				for (int j = 0; j < playArr[i].length; j++) {
+					if (i % 2 == 0) {
+						if (j % 2 == 0) {
+							button[i][j].setBackground(new Color(255, 230, 230));
+						} else {
+							button[i][j].setBackground(new Color(188, 200, 250));
+						}
+					} else if (j % 2 == 0) {
 						button[i][j].setBackground(new Color(188, 200, 250));
+					} else {
+						button[i][j].setBackground(new Color(255, 230, 230));
 					}
-				} else if (j % 2 == 0) {
-					button[i][j].setBackground(new Color(188, 200, 250));
-				} else {
-					button[i][j].setBackground(new Color(255, 230, 230));
-
 				}
-
 			}
+			start = false;
 		}
+
+		if (playingControll.getTurn() == 1) {// thay đổi label để biết quân nào sẽ được đánh tiếp theo
+			turnLabel.setIcon(new ImageIcon(image.xLabelImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
+		} else {
+			turnLabel.setIcon(new ImageIcon(image.oLabelImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH)));
+		}
+
+		for (int i = 0; i < playArr.length; i++) {
+			for (int j = 0; j < playArr[i].length; j++) {
+				if (playArr[i][j] == 0) {
+					button[i][j].setText("");
+				} else if (playArr[i][j] % 2 == 0) {
+					button[i][j].setText("o");
+					button[i][j].setEnabled(false);
+//					System.out.println("x");
+
+				} else if (playArr[i][j] % 2 != 0) {
+					button[i][j].setText("x");
+					button[i][j].setEnabled(false);
+//				System.out.println("o");
+				}
+			}
+
+		}
+
+//		System.out.println(board.getSize());
 	}
-
-
-//	@Override
-//	public void actionPerformed(ActionEvent e) {
-//		// TODO Auto-generated method stub
-//		if(e.getSource()==home) {
-//			controller.showStarting();
-//		}
-//		if(e.getSource()==mute) {
-//			controller.turnMusic();
-//		}
-//	}
 
 }

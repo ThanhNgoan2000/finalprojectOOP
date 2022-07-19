@@ -28,22 +28,6 @@ public class StartingGround extends JFrame {
 	JLabel labeltop, labelbot;
 	JLabel labelRow, labelColumn;
 
-//	public StartingGround(Controller controller, Music music) {
-//
-//		// TODO Auto-generated constructor stub
-//		super("Cờ Caro");
-//		this.music = music;
-//		this.controller = controller;
-//		this.image = new ImageSetting();
-//		init();
-//		controller.turnMusic();
-//		setIconImage(image.gameImage());
-//		setResizable(false);
-//		setDefaultCloseOperation(EXIT_ON_CLOSE);
-//		setSize(520, 600);
-//		setLocationRelativeTo(null);
-//		setVisible(true);
-//	}
 	public StartingGround(Controller controller, Music music) {
 
 		// TODO Auto-generated constructor stub
@@ -65,11 +49,8 @@ public class StartingGround extends JFrame {
 		add(mainPanel = new JPanel());
 		mainPanel.setBackground(new Color(225, 228, 160));
 		mainPanel.setLayout(new BorderLayout());
-
-		mainPanel.add(
-				labeltop = new JLabel(
-						new ImageIcon(image.backgroundImage().getScaledInstance(500, 520, Image.SCALE_SMOOTH))),
-				"Center");
+		Image image = new ImageIcon("image/background.png").getImage().getScaledInstance(500, 520, Image.SCALE_SMOOTH);
+		mainPanel.add(labeltop = new JLabel(new ImageIcon(image)), "Center");
 		labeltop.add(labelRow = new JLabel("Row:"));
 		labelRow.setBounds(30, 460, 100, 30);
 		labelRow.setFont(new Font("Comic Sans MS", Font.BOLD, 18));
@@ -89,7 +70,8 @@ public class StartingGround extends JFrame {
 		column.setBackground(new Color(225, 228, 160));
 
 		// button start
-		labeltop.add(startButton = new JButton(new ImageIcon(image.startButtonImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH))));
+		Image img2 = new ImageIcon("image/start.png").getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+		labeltop.add(startButton = new JButton(new ImageIcon(img2)));
 		startButton.setBounds(180, 480, 150, 100);
 		startButton.setBackground(Color.LIGHT_GRAY);
 		startButton.setFocusable(false);
@@ -100,12 +82,18 @@ public class StartingGround extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-//				Music music = new Music();
-//				 controller = new Controller(music);
-				controller.showView(Integer.parseInt(row.getText()), Integer.parseInt(column.getText()));
+				try {
+
+					controller.showView(Integer.parseInt(row.getText()),Integer.parseInt(column.getText()));
+					controller.showView(Integer.parseInt(row.getText()),Integer.parseInt(column.getText()));
+
+				} catch (NumberFormatException e2) {
+					// TODO: handle exception
+				}
 			}
 		});
 
 	}
+
 
 }

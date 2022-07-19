@@ -12,8 +12,6 @@ import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import view.PlayGround;
-
 public class Music {
 //	private File file;
 //	private AudioInputStream audio;
@@ -58,7 +56,7 @@ public class Music {
 			musicBackground = false;
 			sound = false;
 
-			PlayGround.mute.setToolTipText("turn off music");
+//			PlayGround.mute.setToolTipText("turn off music");
 		}
 	}
 
