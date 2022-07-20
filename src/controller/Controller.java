@@ -96,5 +96,7 @@ public class Controller {
 		// TODO Auto-generated method stub
 		player.setNameXO(nameX, nameO);
 	}
-
+    public boolean checkWin(int i,int j,int n) {
+    	return board.checkWin(i, j);
+    }
 }

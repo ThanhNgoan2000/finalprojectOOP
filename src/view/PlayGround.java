@@ -39,13 +39,12 @@ public class PlayGround extends JFrame implements Observer {
 	JLabel turnLabel = new JLabel();// chưa khai báo sẽ không update được
 	JTextField nameX = new JTextField(), nameO = new JTextField();
 	JScrollPane scrollPane;
-	public static JButton play, about, home, undo,mute, surrender;
+	public static JButton play, about, home, undo, mute, surrender;
 	public static boolean start = false;
 	public boolean sound = true;
 	public int value = 1;
 
-	public PlayGround(Controller controller, Board board, Player playingControll, Music music, int row,
-			int column) {
+	public PlayGround(Controller controller, Board board, Player playingControll, Music music, int row, int column) {
 		// TODO Auto-generated constructor stub
 		this.controller = controller;
 		this.music = music;
@@ -137,16 +136,55 @@ public class PlayGround extends JFrame implements Observer {
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						// TODO Auto-generated method stub
+
 						for (int i = 0; i < button.length; i++) {
 							for (int j = 0; j < button[i].length; j++) {
 								if (e.getSource() == button[i][j]) {
 									controller.setTurn();
 									controller.setArrValue(i, j, value++);
-									button[i][j].setEnabled(false);
-									System.out.println(i + " " + j + " " + value);
+									if (controller.checkWin(i, j, button.length)) {
+										//
+										if (playingControll.getTurn() == 1) {
+											int joption = JOptionPane.showConfirmDialog(null, "O Win", null,
+													JOptionPane.DEFAULT_OPTION);
+											if (joption == JOptionPane.OK_OPTION) {
+												board.setArr(button.length, button[0].length);
+											}
+											button[i][j].setEnabled(false);
+										} else {
+											int joption = JOptionPane.showConfirmDialog(null, "X Win", null,
+													JOptionPane.DEFAULT_OPTION);
+											if (joption == JOptionPane.OK_OPTION) {
+												board.setArr(button.length, button[0].length);
+											}
+											button[i][j].setEnabled(false);
+										}
+
+									}
+//									else if(checkBoard(board.getArr())) {
+//										int joption = JOptionPane.showConfirmDialog(null, "X - pair-O", null,
+//												JOptionPane.DEFAULT_OPTION);
+//										if (joption == JOptionPane.OK_OPTION) {
+//											board.setArr(button.length, button[0].length);
+//										}
+//										button[i][j].setEnabled(false);
+//									}
 								}
 							}
 						}
+					}
+
+					private boolean checkBoard(int[][] arr) {
+						// TODO Auto-generated method stub
+						for (int i = 0; i < arr.length; i++) {
+							for (int j = 0; j < arr.length; j++) {
+								if (arr[i][j] == 0) {
+									return true;
+								}
+
+							}
+						}
+						return false;
 					}
 				});
 
@@ -207,7 +245,8 @@ public class PlayGround extends JFrame implements Observer {
 		undo.setBorderPainted(false);
 		undo.setContentAreaFilled(false);
 
-		iconLabel.add(mute= new JButton(new ImageIcon(image.onSoundImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH))));
+		iconLabel.add(
+				mute = new JButton(new ImageIcon(image.onSoundImage().getScaledInstance(60, 60, Image.SCALE_SMOOTH))));
 		mute.setFocusable(false);
 		mute.setBorderPainted(false);
 		mute.setContentAreaFilled(false);
@@ -353,11 +392,8 @@ public class PlayGround extends JFrame implements Observer {
 	@Override
 	public void update() {
 
-
 		nameX.setText(playingControll.getNameX());
 		nameO.setText(playingControll.getNameO());
-
-//		System.out.println(playingControll.getNameX() + "  , " + playingControll.getNameO());
 
 		int[][] playArr = board.getArr();
 //		System.out.print(Arrays.deepToString(playArr));)
@@ -404,7 +440,6 @@ public class PlayGround extends JFrame implements Observer {
 
 		}
 
-//		System.out.println(board.getSize());
 	}
 
 }

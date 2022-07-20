@@ -83,10 +83,13 @@ public class StartingGround extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				try {
+					int numberRow = Integer.parseInt(row.getText());
+					int numberColumn = Integer.parseInt(column.getText());
+					if (numberRow > 3 && numberColumn > 3) {
+						controller.showView(numberRow, numberColumn);
+//						controller.showView(numberRow, numberColumn);
 
-					controller.showView(Integer.parseInt(row.getText()),Integer.parseInt(column.getText()));
-					controller.showView(Integer.parseInt(row.getText()),Integer.parseInt(column.getText()));
-
+					}
 				} catch (NumberFormatException e2) {
 					// TODO: handle exception
 				}
@@ -94,6 +97,5 @@ public class StartingGround extends JFrame {
 		});
 
 	}
-
 
 }
